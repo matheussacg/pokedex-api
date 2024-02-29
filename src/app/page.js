@@ -7,6 +7,7 @@ export default function Home() {
   const [pokemonId, setPokemonId] = useState(1);
   const [randomPokemonNumber, setRandomPokemonNumber] = useState(1);
   const baseURL = "https://pokeapi.co/api/v2/pokemon/";
+  //------------------------------------------------------------------------------------
 
   useEffect(() => {
     const fetchApi = async () => {
