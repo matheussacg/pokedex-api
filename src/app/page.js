@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [pokemon, setPokemon] = useState({});
   const [pokemonId, setPokemonId] = useState(1);
+  const [randomPokemonNumber, setRandomPokemonNumber] = useState(1);
   const baseURL = "https://pokeapi.co/api/v2/pokemon/";
 
   useEffect(() => {
@@ -21,22 +22,57 @@ export default function Home() {
     fetchApi();
   }, []);
 
+  //------------------------------------------------------------------------------------
+  useEffect(() => {
+    const fetchPokemon = async () => {
+      try {
+        const response = await fetch(`${baseURL}${randomPokemonNumber}`);
+        const data = await response.json();
+        setPokemon(data);
+      } catch (error) {
+        console.error('Erro ao buscar dados da API:', error);
+      }
+    };
+
+    fetchPokemon();
+  }, [randomPokemonNumber]);
+
+  const getRandomNumber = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const handleRandomPokemon = () => {
+    const newRandomNumber = getRandomNumber(1, 1000); 
+    setRandomPokemonNumber(newRandomNumber);
+  };
+
+  //------------------------------------------------------------------------------------
   const handleInputChange = (e) => {
     setPokemonId(e.target.value);
   };
 
-  const handleSearch = () => {
-    const fetchApi = async () => {
-      try {
-        const response = await fetch(`${baseURL}${pokemonId}`);
-        const data = await response.json();
-        setPokemon(data);
-      } catch (error) {
-        console.error("Erro ao buscar dados da API:", error);
-      }
-    };
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(`${baseURL}${pokemonId}`);
+      
+      if (!response.ok) {
 
-    fetchApi();
+        throw new Error(`Erro na busca. Código: ${response.status}`);
+      }
+  
+      const data = await response.json();
+  
+      if (Object.keys(data).length === 0) {
+
+        throw new Error("Pokémon não encontrado. Verifique o ID ou nome.");
+      }
+  
+      setPokemon(data);
+    } catch (error) {
+
+      console.error("Erro ao buscar dados da API:", error);
+
+    }
   };
 
   return (
@@ -81,6 +117,13 @@ export default function Home() {
           Buscar
         </button>
       </div>
+
+      <button
+        onClick={handleRandomPokemon}
+        className="text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 mt-4"
+      >
+        Pokémon Aleatório
+      </button>
 
       <div className="mt-6 flex flex-col items-center justify-center">
         {pokemon.sprites && (
