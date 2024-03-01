@@ -3,7 +3,7 @@
 import Navbar from "@/app/components/Navbar";
 import "../../app/globals.css";
 import "flowbite";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export default function Tipos() {
   const baseURL = "https://pokeapi.co/api/v2/type/";
@@ -74,10 +74,30 @@ export default function Tipos() {
     }
   };
 
+  const AudioPlayer = ({ audioUrl }) => {
+    const audioRef = useRef(null);
+
+    const playAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play();
+      }
+    };
+
+    return (
+      <div>
+        <button onClick={playAudio}>Reproduzir Áudio</button>
+        <audio ref={audioRef} controls>
+          <source src={audioUrl} type="audio/ogg" />
+          Seu navegador não suporta o elemento de áudio.
+        </audio>
+      </div>
+    );
+  };
+
   return (
     <>
       <Navbar />
-      
+
       <div className="container mx-auto mt-6">
         <button
           id="dropdownDefaultButton"
@@ -168,6 +188,9 @@ export default function Tipos() {
                     <th scope="col" className="px-6 py-3">
                       Base Experience
                     </th>
+                    <th scope="col" className="px-6 py-3">
+                      Som
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -197,6 +220,9 @@ export default function Tipos() {
                           : "N/A"}
                       </td>
                       <td className="px-6 py-4">{pokemon.base_experience}</td>
+
+                      <td className="px-6 py-4"><AudioPlayer audioUrl={pokemon.cries.latest} /></td>
+
                     </tr>
                   ))}
                 </tbody>
